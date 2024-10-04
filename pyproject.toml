@@ -13,6 +13,7 @@ dependencies = [
 requires = ["maturin>=1.7,<2.0"]
 build-backend = "maturin"
 
+# https://www.maturin.rs/config
 [tool.maturin]
 features = ["pyo3/extension-module"]
 python-packages = ["wombatpouch"]
