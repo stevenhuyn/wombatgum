@@ -42,7 +42,9 @@ struct Glover {
 impl Glover {
     #[new]
     fn py_new() -> PyResult<Self> {
+        println!("Loading");
         let vectors = Glover::load_glove_vectors("assets/glove.42B.300d.txt")?;
+        println!("Loaded");
         Ok(Self {
             vectors
         })
@@ -51,6 +53,8 @@ impl Glover {
 
     #[pyo3(signature = (word1, word2))]
     fn similar(&self, word1: &str, word2: &str) -> PyResult<PyObject> {
+
+
         if let (Some(vec1), Some(vec2)) = (self.vectors.get(word1), self.vectors.get(word2)) {
             let similarity = Glover::cosine_similarity(vec1, vec2);
             return Python::with_gil(|py| Ok(similarity.to_object(py)));
