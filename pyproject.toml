@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "maturin>=1.7.4",
+    "pip>=24.2",
 ]
 
 [build-system]
@@ -15,6 +16,7 @@ build-backend = "maturin"
 [tool.maturin]
 features = ["pyo3/extension-module"]
 python-packages = ["wombatpouch"]
+include = ["assets"]
 
 [project.scripts]
 start = "wombatpouch:main"
