@@ -3,14 +3,42 @@ use pyo3::prelude::*;
 /// Formats the sum of two numbers as string.
 #[pyfunction]
 fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-    let _ =run();
     Ok((a + b).to_string())
+}
+
+#[pyfunction]
+fn run() -> PyResult<()> {
+    let glove_vectors = load_glove_vectors("assets/glove.42B.300d.txt")?;
+
+    // Example: Get vectors for two words and compute similarity
+    let word1 = "king";
+    let word2 = "queen";
+
+    if let (Some(vec1), Some(vec2)) = (glove_vectors.get(word1), glove_vectors.get(word2)) {
+        let similarity = cosine_similarity(vec1, vec2);
+        println!("Cosine similarity between {} and {}: {}", word1, word2, similarity);
+    } else {
+        println!("Words not found in the GloVe dataset.");
+    }
+
+    Ok(())
+}
+
+#[pyfunction]
+fn printer() -> PyResult<()> {
+    println!("test");
+    Python::with_gil(|py| {
+        py.eval_bound("print('hello python')", None, None)?;
+        Ok(())
+    })
 }
 
 /// A Python module implemented in Rust.
 #[pymodule]
 fn glovers(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
+    m.add_function(wrap_pyfunction!(printer, m)?)?;
+    m.add_function(wrap_pyfunction!(run, m)?)?;
     Ok(())
 }
 
@@ -53,20 +81,3 @@ fn cosine_similarity(vec1: &Array1<f32>, vec2: &Array1<f32>) -> f32 {
 }
 
 
-#[pyfunction]
-fn run() -> PyResult<()> {
-    let glove_vectors = load_glove_vectors("assets/glove.42B.300d.txt")?;
-
-    // Example: Get vectors for two words and compute similarity
-    let word1 = "king";
-    let word2 = "queen";
-
-    if let (Some(vec1), Some(vec2)) = (glove_vectors.get(word1), glove_vectors.get(word2)) {
-        let similarity = cosine_similarity(vec1, vec2);
-        println!("Cosine similarity between {} and {}: {}", word1, word2, similarity);
-    } else {
-        println!("Words not found in the GloVe dataset.");
-    }
-
-    Ok(())
-}
