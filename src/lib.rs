@@ -25,9 +25,9 @@ fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
 
 #[pyfunction]
 fn printer() -> PyResult<()> {
-    println!("test");
+    println!("printer final");
     Python::with_gil(|py| {
-        py.eval_bound("print('hello python')", None, None)?;
+        py.eval_bound("print('hello python 2')", None, None)?;
         Ok(())
     })
 }

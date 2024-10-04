@@ -21,3 +21,6 @@ include = ["assets"]
 
 [project.scripts]
 start = "wombatpouch:main"
+
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { file = "setup.py" }, { file = "setup.cfg" }, { file = "src/**/*.rs"}]
