@@ -14,3 +14,7 @@ build-backend = "maturin"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
+python-packages = ["wombatpouch"]
+
+[project.scripts]
+start = "wombatpouch:main"

@@ -2,17 +2,6 @@ version = 1
 requires-python = ">=3.12"
 
 [[package]]
-name = "donkeyglued"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "maturin" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "maturin", specifier = ">=1.7.4" }]
-
-[[package]]
 name = "maturin"
 version = "1.7.4"
 source = { registry = "https://pypi.org/simple" }
@@ -31,3 +20,14 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/72/50/a9b402aa506bad6c066c7775b1cb3036b7b1c74b9de708ed537ee804ea4a/maturin-1.7.4-py3-none-win_amd64.whl", hash = "sha256:f70c1c8ec9bd4749a53c0f3ae8fdbb326ce45be4f1c5551985ee25a6d7150328", size = 7442039 },
     { url = "https://files.pythonhosted.org/packages/30/38/8e27282ab6ff94291f04e3eb11ba960dfb487605d73cec75177d3a29879a/maturin-1.7.4-py3-none-win_arm64.whl", hash = "sha256:f3d38a6d0c7fd7b04bec30dd470b2173cf9bd184ab6220c1acaf49df6b48faf5", size = 6388008 },
 ]
+
+[[package]]
+name = "wombatpouch"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "maturin" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "maturin", specifier = ">=1.7.4" }]
