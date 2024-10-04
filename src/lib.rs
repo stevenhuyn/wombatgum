@@ -1,8 +1,11 @@
 use ndarray::Array1;
 use pyo3::prelude::*;
+use rayon::iter::ParallelIterator;
+use rayon::str::ParallelString;
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::{BufRead, BufReader, Result};
+use std::fs::read_to_string;
+use std::io::Result;
+use std::time::Instant;
 
 /// A Python module implemented in Rust.
 #[pymodule]
@@ -42,19 +45,15 @@ struct Glover {
 impl Glover {
     #[new]
     fn py_new() -> PyResult<Self> {
-        println!("Loading");
+        let start = Instant::now();
         let vectors = Glover::load_glove_vectors("assets/glove.42B.300d.txt")?;
-        println!("Loaded");
-        Ok(Self {
-            vectors
-        })
-
+        let elapsed = start.elapsed();
+        println!("Elapsed: {:.2}", elapsed.as_secs_f32());
+        Ok(Self { vectors })
     }
 
     #[pyo3(signature = (word1, word2))]
     fn similar(&self, word1: &str, word2: &str) -> PyResult<PyObject> {
-
-
         if let (Some(vec1), Some(vec2)) = (self.vectors.get(word1), self.vectors.get(word2)) {
             let similarity = Glover::cosine_similarity(vec1, vec2);
             return Python::with_gil(|py| Ok(similarity.to_object(py)));
@@ -67,26 +66,20 @@ impl Glover {
 impl Glover {
     /// A function to load GloVe vectors from a file into a HashMap.
     fn load_glove_vectors(file_path: &str) -> Result<HashMap<String, Array1<f32>>> {
-        let file = File::open(file_path)?;
-        let var_name = BufReader::new(file);
-        let reader = var_name;
-
-        let mut word_vectors = HashMap::new();
-
-        for line in reader.lines() {
-            let line = line?;
-            let mut tokens = line.split_whitespace();
-
-            // First token is the word
-            if let Some(word) = tokens.next() {
-                // Collect the rest as the vector
-                let vector: Array1<f32> = tokens
-                    .map(|token| token.parse::<f32>().expect("Could not parse float"))
-                    .collect::<Array1<f32>>();
-
-                word_vectors.insert(word.to_string(), vector);
-            }
-        }
+        let word_vectors: HashMap<String, Array1<f32>> = read_to_string(file_path)?
+            .par_lines() // Read the lines from the file
+            .filter_map(|line| {
+                // Filter and map the lines in parallel
+                let mut tokens = line.split_whitespace();
+                if let Some(word) = tokens.next() {
+                    let vector: Array1<f32> = tokens
+                        .map(|token| token.parse::<f32>().expect("Could not parse float"))
+                        .collect();
+                    return Some((word.to_string(), vector));
+                }
+                None
+            })
+            .collect(); // Collect results into the HashMap
 
         Ok(word_vectors)
     }
